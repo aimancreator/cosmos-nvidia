@@ -1,0 +1,20 @@
+[project]
+name = "cosmos3-modal-studio"
+version = "0.1.0"
+description = "A friendly Modal UI for NVIDIA Cosmos3-Super-Image2Video"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "flask>=3.1,<4",
+    "modal>=1.3,<2",
+    "pillow>=11,<13",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4,<9",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["."]

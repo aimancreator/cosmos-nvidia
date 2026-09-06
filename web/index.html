@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0d0c" />
+    <title>Cosmos 3 Motion Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Cosmos Studio home">
+        <span class="brand-mark"><span></span></span>
+        <span>Cosmos <strong>Motion Studio</strong></span>
+      </a>
+      <div class="preview-pill"><span class="status-dot"></span> Private preview</div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">NVIDIA COSMOS 3 · IMAGE TO VIDEO</p>
+        <h1>Give your still image<br /><em>a sense of motion.</em></h1>
+        <p class="intro-copy">Upload a starting frame, direct the motion, and turn a single image into a cinematic video sequence.</p>
+      </section>
+
+      <section class="studio-grid">
+        <form id="generate-form" class="panel composer">
+          <div class="panel-heading">
+            <span class="step-number">01</span>
+            <div><h2>Starting frame</h2><p>JPG, PNG, or WebP · up to 20 MB</p></div>
+          </div>
+
+          <label id="drop-zone" class="drop-zone" for="image-input">
+            <input id="image-input" name="image" type="file" accept="image/jpeg,image/png,image/webp" required />
+            <img id="image-preview" alt="Selected starting frame" />
+            <div id="upload-prompt" class="upload-prompt">
+              <div class="upload-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" /></svg>
+              </div>
+              <strong>Drop an image here</strong><span>or click to browse</span>
+            </div>
+            <button id="change-image" class="change-image" type="button">Change image</button>
+          </label>
+
+          <div class="divider"></div>
+          <div class="panel-heading compact">
+            <span class="step-number">02</span>
+            <div><h2>Describe the motion</h2><p>Be specific about subject, movement, and camera</p></div>
+          </div>
+          <label class="sr-only" for="prompt">Motion prompt</label>
+          <div class="prompt-box">
+            <textarea id="prompt" name="prompt" maxlength="4000" required placeholder="Example: The small warehouse robot slowly lifts the blue box. Its arm moves smoothly while the camera remains completely still. Soft afternoon light shifts across the floor."></textarea>
+            <span id="prompt-count">0 / 4000</span>
+          </div>
+
+          <div class="settings-row">
+            <label>Quality
+              <select id="preset" name="preset">
+                <option value="draft">Draft · faster</option>
+                <option value="balanced" selected>Balanced</option>
+                <option value="quality">Quality · 7.9 sec</option>
+              </select>
+            </label>
+            <label>Format
+              <select id="aspect" name="aspect">
+                <option value="landscape" selected>Landscape · 16:9</option>
+                <option value="portrait">Portrait · 9:16</option>
+                <option value="square">Square · 1:1</option>
+              </select>
+            </label>
+            <label>Seed
+              <input id="seed" name="seed" type="number" min="0" max="2147483647" value="42" />
+            </label>
+          </div>
+
+          <details>
+            <summary>Advanced controls</summary>
+            <label class="advanced-label" for="negative-prompt">Negative prompt <span>Optional</span></label>
+            <textarea id="negative-prompt" name="negative_prompt" class="negative" placeholder="Leave empty to use the recommended quality preset."></textarea>
+          </details>
+
+          <div id="form-error" class="error" role="alert"></div>
+          <button id="generate-button" class="generate-button" type="submit">
+            <span>Generate video</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+          </button>
+          <p class="cost-note">One render at a time · the motion engine sleeps automatically when finished.</p>
+        </form>
+
+        <aside class="panel result-panel">
+          <div id="empty-state" class="empty-state">
+            <div class="orbit"><span></span><i></i></div>
+            <h2>Your video will appear here</h2>
+            <p>Generation usually takes several minutes. The first run also warms the model.</p>
+          </div>
+
+          <div id="processing-state" class="processing-state hidden">
+            <div class="processing-visual">
+              <div class="scanline"></div>
+              <img id="processing-image" alt="Video starting frame" />
+              <div class="processing-badge"><span></span> Rendering frames</div>
+            </div>
+            <div class="progress-copy">
+              <div><p class="eyebrow">COSMOS IS DREAMING</p><span id="elapsed">00:00</span></div>
+              <h2 id="processing-title">Initializing the motion engine</h2>
+              <p id="processing-message">The first render may take longer while the model prepares your scene.</p>
+              <div class="progress-track"><span></span></div>
+              <button id="cancel-button" class="text-button" type="button">Cancel generation</button>
+            </div>
+          </div>
+
+          <div id="result-state" class="result-state hidden">
+            <div class="video-wrap"><video id="result-video" controls playsinline></video></div>
+            <div class="result-meta">
+              <div><p class="eyebrow">GENERATION COMPLETE</p><h2>Your scene is in motion.</h2></div>
+              <button id="download-button" class="download-button" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" /></svg>
+                Download MP4
+              </button>
+            </div>
+            <button id="new-video-button" class="text-button" type="button">Create another video</button>
+          </div>
+
+          <section class="activity-panel" aria-label="Generation activity log">
+            <div class="activity-header">
+              <div>
+                <span class="terminal-mark">›_</span>
+                <h3>Generation log</h3>
+              </div>
+              <span id="run-status" class="run-status ready"><i></i> Ready</span>
+            </div>
+            <div id="activity-log" class="activity-log" aria-live="polite">
+              <div class="log-entry info">
+                <span class="log-dot"></span>
+                <div><strong>Local studio ready</strong><p>Waiting for an image and motion prompt.</p></div>
+                <time>now</time>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <footer><span>Cosmos Motion Studio</span><span>·</span><span>Private demo build</span></footer>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
